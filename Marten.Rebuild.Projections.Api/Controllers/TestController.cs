@@ -6,9 +6,9 @@ namespace Marten.Rebuild.Projections.Api.Controllers;
 [Route("[controller]")]
 public class TestController : ControllerBase
 {
-    [HttpGet("recreate-all-projections", Name = nameof(RecreateAllProjections))]
+    [HttpGet("rebuild-projections", Name = nameof(RebuildProjections))]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    public async Task<IActionResult> RecreateAllProjections([FromServices] IDocumentStore store, CancellationToken cancellationToken)
+    public async Task<IActionResult> RebuildProjections([FromServices] IDocumentStore store, CancellationToken cancellationToken)
     {
         // Resolve the IProjectionDaemon from the store
         using var daemon = await store.BuildProjectionDaemonAsync();
@@ -23,7 +23,8 @@ public class TestController : ControllerBase
 
         await daemon.RebuildProjection("TodoItem", TimeSpan.FromSeconds(5), cancellationToken);
 
-        await store.Advanced.Clean.DeleteDocumentsByTypeAsync(typeof(TodoItemsCollectionView), cancellationToken);
+        //Manually truncate the view table not working
+        //await store.Advanced.Clean.DeleteDocumentsByTypeAsync(typeof(TodoItemsCollectionView), cancellationToken);
         await daemon.RebuildProjection("Marten.Rebuild.Projections.Api.TodoItemsCollectionViewProjection", TimeSpan.FromSeconds(5), cancellationToken);
 
         await daemon.StopAll();
