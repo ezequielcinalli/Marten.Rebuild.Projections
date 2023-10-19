@@ -23,8 +23,7 @@ public class TestController : ControllerBase
 
         await daemon.RebuildProjection("TodoItem", TimeSpan.FromSeconds(5), cancellationToken);
 
-        //Manually truncate the view table not working
-        //await store.Advanced.Clean.DeleteDocumentsByTypeAsync(typeof(TodoItemsCollectionView), cancellationToken);
+        await store.Advanced.Clean.DeleteDocumentsByTypeAsync(typeof(TodoItemsCollectionView), cancellationToken);
         await daemon.RebuildProjection("Marten.Rebuild.Projections.Api.TodoItemsCollectionViewProjection", TimeSpan.FromSeconds(5), cancellationToken);
 
         await daemon.StopAll();

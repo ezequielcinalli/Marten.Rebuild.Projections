@@ -15,7 +15,9 @@ builder.Services.AddMarten(options =>
     options.Connection(connectionString);
 
     options.Projections.Add<TodoItemProjection>(ProjectionLifecycle.Inline);
-    options.Projections.Add<TodoItemsCollectionViewProjection>(ProjectionLifecycle.Inline);
+    options.Projections.Add<TodoItemsCollectionViewProjection>(
+        ProjectionLifecycle.Inline,
+        asyncOptions => asyncOptions.EnableDocumentTrackingByIdentity = true);
 
     options.AutoCreateSchemaObjects = AutoCreate.All;
     //Maybe incorrect use of tenants but it works for auto create the postgres database
