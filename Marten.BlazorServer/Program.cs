@@ -1,13 +1,19 @@
+using Marten;
 using Marten.BlazorServer.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<WeatherForecastService>();
+
+builder.Services.AddMarten(options =>
+{
+    var connectionString = "Host=localhost;Port=5432;Database=MartenBlazorServer;Username=postgres;password=postgres;Command Timeout=3";
+    options.Connection(connectionString);
+    options.DatabaseSchemaName = "public";
+}).UseLightweightSessions();
 
 var app = builder.Build();
 

@@ -1,20 +1,30 @@
-namespace Marten.BlazorServer.Data
-{
-    public class WeatherForecastService
-    {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+namespace Marten.BlazorServer.Data;
 
-        public Task<WeatherForecast[]> GetForecastAsync(DateOnly startDate)
+public class WeatherForecastService
+{
+    private readonly IQuerySession _querySession;
+    private readonly IDocumentSession _documentSession;
+
+    public WeatherForecastService(IQuerySession querySession, IDocumentSession documentSession)
+    {
+        _querySession = querySession;
+        _documentSession = documentSession;
+    }
+
+    public async Task<IReadOnlyList<WeatherForecast>> GetForecastAsync()
+    {
+        return await _querySession.Query<WeatherForecast>().ToListAsync();
+    }
+
+    public async Task AddForecastAsync(int temperatureC, string summary)
+    {
+        var forecast = new WeatherForecast
         {
-            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = startDate.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            }).ToArray());
-        }
+            Date = DateOnly.FromDateTime(DateTime.Now),
+            TemperatureC = temperatureC,
+            Summary = summary
+        };
+        _documentSession.Store(forecast);
+        await _documentSession.SaveChangesAsync();
     }
 }

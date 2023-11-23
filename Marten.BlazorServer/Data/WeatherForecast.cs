@@ -2,6 +2,7 @@ namespace Marten.BlazorServer.Data
 {
     public class WeatherForecast
     {
+        public Guid Id { get; set; }
         public DateOnly Date { get; set; }
 
         public int TemperatureC { get; set; }
